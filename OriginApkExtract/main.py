@@ -13,20 +13,21 @@ def run_adb_command(cmd):
 
 def list_system_apps():
     print("正在获取系统应用列表...")
-    lines = run_adb_command("adb shell pm list packages -f -s")
+    lines = run_adb_command("adb shell pm list packages -f")
     apk_paths = []
     for line in lines:
         if line.startswith("package:"):
             try:
-                path = line[len("package:"):].split('=')[0]
-                apk_paths.append(path)
+                raw = line[len("package:"):]
+                apk_path, _ = raw.rsplit('=', 1)  # 从右侧切一次，防止路径中包含等号
+                apk_paths.append(apk_path)
             except Exception as e:
                 print(f"解析错误：{line}, 错误：{e}")
     return apk_paths
 
 def pull_apks(apk_paths):
     for apk_path in apk_paths:
-        # 保持原有目录结构：比如 /system/app/xxx/xxx.apk
+        # 保持原有目录结构
         relative_path = apk_path.lstrip("/")
         dest_path = os.path.join(DEST_ROOT, relative_path)
 
@@ -35,7 +36,7 @@ def pull_apks(apk_paths):
         os.makedirs(dest_dir, exist_ok=True)
 
         print(f"正在拉取：{apk_path} -> {dest_path}")
-        result = subprocess.run(f"adb pull {apk_path} \"{dest_path}\"", shell=True)
+        result = subprocess.run(f'adb pull "{apk_path}" "{dest_path}"', shell=True)
         if result.returncode != 0:
             print(f"拉取失败：{apk_path}")
 
