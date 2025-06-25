@@ -1,11 +1,3 @@
-# 手机system apk的提取代码
-
-思路极其简单：
-
-1. 罗列出所有system apk
-
->  adb shell pm list packages -f -s
-
-2. 拉取apk
-
-> adb pull {apk_path} \"{dest_path}\""
+# 一些数据采集脚本
+- OriginAPKExtract 手机出厂自带apk提取
+- PaperSearch 基于DBLP的四大顶会关键词论文采集工具
